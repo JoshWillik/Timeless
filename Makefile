@@ -1,7 +1,7 @@
 CC=g++
-CFLAGS=-Wall
+CFLAGS=-Wall -g
 GLFWFLAGS=$(shell pkg-config --cflags libglfw)
-GLFWOUTPUTFLAGS=$(shell pkg-config --libs libglfw)
+GLFWOUTPUTFLAGS=$(shell pkg-config --libs libglfw glew)
 LDFLAGS=
 SOURCES=playground.cpp
 OUTPUT=runtime.bin
