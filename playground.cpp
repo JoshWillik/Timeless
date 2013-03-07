@@ -15,6 +15,7 @@
 
 //3d math easiness handy stuff. (not needed, makes life easier)
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 //could use namespace, but I'm not going to
 //I want to see what everything belongs to.
 
@@ -203,6 +204,7 @@ int main()
         return -1;
     }
 
+    //NOTE 1
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
@@ -210,11 +212,40 @@ int main()
     //makin' shaders happen
     GLuint programID = LoadShaders( "SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
+    //get the location of the shader ID
+    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+
+    //set perspective for 3d space
+    glm::mat4 Projection = glm::perspective(
+        45.0f, // FOV in degrees
+        4.0f / 3.0f, // aspect ratio, 4:3
+        0.1f, //minimum cutoff render distance
+        100.0f //maximum cutoff render distance
+        );
+
+    //create the camera matrix
+    glm::mat4 View = glm::lookAt(
+                        glm::vec3(4,3,3), //the exact point the camera is located at in worldspace
+                        glm::vec3(0,0,0), //the point the camera is looking at
+                        glm::vec3(0,1,0)  //orientation of the camera, y=1 for upright, y=-1 for upsidedown
+                    );
+
+    //identify the model matrix (at the origin)
+    glm::mat4 Model = glm::mat4(1.0f); //unsure of what the argument does
+
+    //applying the transformations to the MVP location of the shader
+    glm::mat4 MVP = Projection * View * Model; //right to left multiplication takes place
+        
+
     static const GLfloat g_vertex_buffer_data[] = {
         -1.0f, -1.0f, 0.0f,
         1.0f, -1.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
     };
+
+    //included in the example code, not entirely sure what this does.
+    //comment out when code is working to discover purpose
+    static const GLushort g_element_buffer_data[] = { 0, 1, 2};
 
     //identify a vertex buffer
     GLuint vertexbuffer;
@@ -231,11 +262,24 @@ int main()
 
     while (running)
     {
-        //render stuff
+        //set the color of screen background. The skybox, if you will.
+        //NOTE 2: can this be made into a picture instead? Research
         glClearColor(red, green, blue, alpha);
+        
+        //clear the screen?
         glClear(GL_COLOR_BUFFER_BIT); 
+
+        //using our shader
         glUseProgram(programID);
 
+        //send the transforms to the shader
+        //in the "MVP" container?
+        glUniformMatrix4fv(
+                MatrixID,   //the location of the transforms
+                1,          //the count of transforms?
+                GL_FALSE,   //transpose? Whatever that means
+                &MVP[0][0]  //a float, for some reason
+            );
         draw_triangle(vertexbuffer);
         color_change();
 
@@ -260,3 +304,12 @@ int main()
 
     return 0;
 }
+
+
+///////////////////////
+//NOTES
+///////////////////////
+//
+//NOTE 1: What do these functions do? Why are they there? Discover purpose/usefullness of these
+//
+//NOTE 2: can this be made into a picture instead? Research

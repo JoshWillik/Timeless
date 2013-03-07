@@ -7,7 +7,7 @@ SOURCES=playground.cpp
 OUTPUT=runtime.bin
 OUTPUT32=32runtime.bin
 OUTPUT64=64runtime.bin
-OUTPUTFLAGS=-lGL
+OUTPUTFLAGS=-lGL 
 
 all:
 	$(CC) $(CFLAGS) $(GLFWFLAGS) $(SOURCES) -o $(OUTPUT) $(OUTPUTFLAGS) $(GLFWOUTPUTFLAGS)

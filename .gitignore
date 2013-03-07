@@ -4,3 +4,9 @@
 *.bin
 *.o
 *.so
+
+####
+# Vim swaps
+####
+
+*.swp
